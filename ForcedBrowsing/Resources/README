@@ -1,0 +1,60 @@
+# Forced Browsing
+
+**Forced browsing** is an attack where the attacker attempts to access resources that are not linked or visible in the web application but are still accessible on the server. These may include sensitive files, directories, and endpoints that were not intended to be publicly exposed.
+
+Attackers typically use brute-force techniques to guess or enumerate common or predictable file and directory names, such as:
+
+- Temporary or backup files (`/backup/`, `/temp/`, `index.bak`)  
+- Admin interfaces (`/admin/`, `/dashboard/`)  
+- Configuration files (`.env`, `web.config`, `config.php`)  
+- Development artifacts (`.git/`, `/old/`, `/test/`)  
+
+These hidden resources may contain valuable information, including:
+
+- Source code  
+- Credentials  
+- Internal API endpoints  
+- Server/network configuration details
+
+This attack is often automated using tools like:
+
+- **Dirb**  
+- **Gobuster**  
+- **FFUF**  
+- **Burp Suite Intruder**  
+
+It is also referred to as:
+
+- **Predictable Resource Location**  
+- **File Enumeration**  
+- **Directory Enumeration**  
+- **Resource Enumeration**
+
+## Mitigations
+
+To defend against forced browsing:
+
+- **Implement proper access controls** on all sensitive resources, even if they are unlinked.
+- **Disable directory listing** in the web server configuration (e.g., `Options -Indexes` in Apache).
+- **Avoid predictable naming conventions** for sensitive directories and files.
+- **Delete backup, development, and test files** before deploying to production.
+- **Use authentication and authorization** to protect access to non-public endpoints.
+- **Regularly scan your server** for exposed or forgotten resources using security tools.
+- **Block access to sensitive files** using web server rules (e.g., `.htaccess` rules, NGINX location blocks).
+- **Monitor logs** for suspicious access patterns indicating enumeration attempts.
+
+## References
+- [Forced Browsing](https://owasp.org/www-community/attacks/Forced_browsing)
+
+## Exercise
+After scraping whole website, the robots.txt has been detected.
+```
+User-agent: *
+Disallow: /whatever
+Disallow: /.hidden
+```
+
+Disallow in the header says - do not crawl any URLs that start with /whatever and /.hidden.
+Surely, both of them would interest us.
+- With a script, we have crawled all directories of /.hidden and detected the flag.
+- By accessing /whatever, we have obtained htpasswd file with root password. The hash has been detected as MD5.
